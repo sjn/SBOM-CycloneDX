@@ -1,0 +1,4 @@
+[submodule "t/resources/spec"]
+	path = t/resources/spec
+	url = https://github.com/CycloneDX/specification.git
+	branch = v1.5-dev
