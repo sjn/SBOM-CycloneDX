@@ -1,3 +1,11 @@
+# SBOM-CycloneDX
+
+Perl implementation of OWASP's CycloneDX SBOM standard
+
+
 # Perl & CPAN SBOMs
 
-This repo is for exploring SBOM creation from CPAN toolchain metadata.
+To learn more about SBOM creation and/or help improve how this is done
+in the Perl and CPAN communities, reach out the CPAN Security WG!
+
+* https://security.metacpan.org
