@@ -29,7 +29,7 @@ message Bom {
   repeated ExternalReference external_references = 7;
   // Provides the ability to document dependency relationships.
   repeated Dependency dependencies = 8;
-  // Provides the ability to document aggregate completeness
+  // Compositions describe constituent parts (including components, services, and dependency relationships) and their completeness. The completeness of vulnerabilities expressed in a BOM may also be described.
   repeated Composition compositions = 9;
   // Vulnerabilities identified in components or services.
   repeated Vulnerability vulnerabilities = 10;
@@ -37,6 +37,8 @@ message Bom {
   repeated Annotation annotations = 11;
   // Specifies optional, custom, properties
   repeated Property properties = 12;
+  // Describes how a component or service was manufactured or deployed. This is achieved through the use of formulas, workflows, tasks, and steps, which declare the precise steps to reproduce along with the observed formulas describing the steps which transpired in the manufacturing process.
+  repeated Formula formulation = 13;
 }
 
 enum Classification {
@@ -49,7 +51,7 @@ enum Classification {
   CLASSIFICATION_LIBRARY = 3;
   // A software operating system without regard to deployment model (i.e. installed on physical hardware, virtual machine, image, etc) Refer to https://en.wikipedia.org/wiki/Operating_system
   CLASSIFICATION_OPERATING_SYSTEM = 4;
-  // A hardware device such as a processor, or chip-set. A hardware device containing firmware should include a component for the physical hardware itself, and another component of type 'firmware' or 'operating-system' (whichever is relevant), describing information about the software running on the device.
+  // A hardware device such as a processor, or chip-set. A hardware device containing firmware should include a component for the physical hardware itself, and another component of type 'firmware' or 'operating-system' (whichever is relevant), describing information about the software running on the device. See also the list of known device properties: https://github.com/CycloneDX/cyclonedx-property-taxonomy/blob/main/cdx/device.md
   CLASSIFICATION_DEVICE = 5;
   // A computer file. Refer to https://en.wikipedia.org/wiki/Computer_file for information about files.
   CLASSIFICATION_FILE = 6;
@@ -147,6 +149,8 @@ message DataFlow {
   repeated string source = 5;
   // The URI, URL, or BOM-Link of the components or services the data is sent to
   repeated string destination = 6;
+  // Data Governance
+  optional DataGovernance governance = 7;
 }
 
 // Specifies the flow direction of the data. Valid values are: inbound, outbound, bi-directional, and unknown. Direction is relative to the service. Inbound flow states that data enters the service. Outbound flow states that data leaves the service. Bi-directional states that data flows both ways, and unknown states that the direction is not known.
@@ -219,32 +223,46 @@ enum ExternalReferenceType {
   EXTERNAL_REFERENCE_TYPE_ATTESTATION = 16;
   // An enumeration of identified weaknesses, threats, and countermeasures, dataflow diagram (DFD), attack tree, and other supporting documentation in human-readable or machine-readable format
   EXTERNAL_REFERENCE_TYPE_THREAT_MODEL = 17;
+  // The defined assumptions, goals, and capabilities of an adversary.
+  EXTERNAL_REFERENCE_TYPE_ADVERSARY_MODEL = 18;
+  // Identifies and analyzes the potential of future events that may negatively impact individuals, assets, and/or the environment. Risk assessments may also include judgments on the tolerability of each risk.
+  EXTERNAL_REFERENCE_TYPE_RISK_ASSESSMENT = 19;
   // The location where a component was published to. This is often the same as "distribution" but may also include specialized publishing processes that act as an intermediary
-  EXTERNAL_REFERENCE_TYPE_DISTRIBUTION_INTAKE = 18;
+  EXTERNAL_REFERENCE_TYPE_DISTRIBUTION_INTAKE = 20;
   // A Vulnerability Disclosure Report (VDR) which asserts the known and previously unknown vulnerabilities that affect a component, service, or product including the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on a component, service, or product
-  EXTERNAL_REFERENCE_TYPE_VULNERABILITY_ASSERTION = 19;
+  EXTERNAL_REFERENCE_TYPE_VULNERABILITY_ASSERTION = 21;
   // A Vulnerability Exploitability eXchange (VEX) which asserts the known vulnerabilities that do not affect a product, product family, or organization, and optionally the ones that do. The VEX should include the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on the product, product family, or organization
-  EXTERNAL_REFERENCE_TYPE_EXPLOITABILITY_STATEMENT = 20;
+  EXTERNAL_REFERENCE_TYPE_EXPLOITABILITY_STATEMENT = 22;
   // Results from an authorized simulated cyberattack on a component or service, otherwise known as a penetration test
-  EXTERNAL_REFERENCE_TYPE_PENTEST_REPORT = 21;
+  EXTERNAL_REFERENCE_TYPE_PENTEST_REPORT = 23;
   // SARIF or proprietary machine or human-readable report for which static analysis has identified code quality, security, and other potential issues with the source code
-  EXTERNAL_REFERENCE_TYPE_STATIC_ANALYSIS_REPORT = 22;
+  EXTERNAL_REFERENCE_TYPE_STATIC_ANALYSIS_REPORT = 24;
   // Dynamic analysis report that has identified issues such as vulnerabilities and misconfigurations
-  EXTERNAL_REFERENCE_TYPE_DYNAMIC_ANALYSIS_REPORT = 23;
+  EXTERNAL_REFERENCE_TYPE_DYNAMIC_ANALYSIS_REPORT = 25;
   // Report generated by analyzing the call stack of a running application
-  EXTERNAL_REFERENCE_TYPE_RUNTIME_ANALYSIS_REPORT = 24;
+  EXTERNAL_REFERENCE_TYPE_RUNTIME_ANALYSIS_REPORT = 26;
   // Report generated by Software Composition Analysis (SCA), container analysis, or other forms of component analysis
-  EXTERNAL_REFERENCE_TYPE_COMPONENT_ANALYSIS_REPORT = 25;
+  EXTERNAL_REFERENCE_TYPE_COMPONENT_ANALYSIS_REPORT = 27;
   // Report containing a formal assessment of an organization, business unit, or team against a maturity model
-  EXTERNAL_REFERENCE_TYPE_MATURITY_REPORT = 26;
+  EXTERNAL_REFERENCE_TYPE_MATURITY_REPORT = 28;
   // Industry, regulatory, or other certification from an accredited (if applicable) certification body
-  EXTERNAL_REFERENCE_TYPE_CERTIFICATION_REPORT = 27;
+  EXTERNAL_REFERENCE_TYPE_CERTIFICATION_REPORT = 29;
   // Report or system in which quality metrics can be obtained
-  EXTERNAL_REFERENCE_TYPE_QUALITY_METRICS = 28;
+  EXTERNAL_REFERENCE_TYPE_QUALITY_METRICS = 30;
   // Code or configuration that defines and provisions virtualized infrastructure, commonly referred to as Infrastructure as Code (IaC)
-  EXTERNAL_REFERENCE_TYPE_CODIFIED_INFRASTRUCTURE = 29;
+  EXTERNAL_REFERENCE_TYPE_CODIFIED_INFRASTRUCTURE = 31;
   // A model card describes the intended uses of a machine learning model, potential limitations, biases, ethical considerations, training parameters, datasets used to train the model, performance metrics, and other relevant data useful for ML transparency.
-  EXTERNAL_REFERENCE_TYPE_MODEL_CARD = 30;
+  EXTERNAL_REFERENCE_TYPE_MODEL_CARD = 32;
+    // Plans of Action and Milestones (POAM) compliment an "attestation" external reference. POAM is defined by NIST as a "document that identifies tasks needing to be accomplished. It details resources required to accomplish the elements of the plan, any milestones in meeting the tasks and scheduled completion dates for the milestones".
+  EXTERNAL_REFERENCE_TYPE_POAM = 33;
+  // A record of events that occurred in a computer system or application, such as problems, errors, or information on current operations.
+  EXTERNAL_REFERENCE_TYPE_LOG = 34;
+  // Parameters or settings that may be used by other components or services.
+  EXTERNAL_REFERENCE_TYPE_CONFIGURATION = 35;
+  // Information used to substantiate a claim.
+  EXTERNAL_REFERENCE_TYPE_EVIDENCE = 36;
+  // Describes how a component or service was manufactured or deployed.
+  EXTERNAL_REFERENCE_TYPE_FORMULATION = 37;
 }
 
 enum HashAlg {
@@ -377,9 +395,9 @@ enum LicensingTypeEnum {
   LICENSING_TYPE_CORE_POINTS = 5;
   // A license for which consumption is measured by non-standard metrics.
   LICENSING_TYPE_CUSTOM_METRIC = 6;
-  // A license which covers a defined number of installations on computers and other types of devices.
+  // A license that covers a defined number of installations on computers and other types of devices.
   LICENSING_TYPE_DEVICE = 7;
-  // A license which grants permission to install and use software for trial purposes.
+  // A license that grants permission to install and use software for trial purposes.
   LICENSING_TYPE_EVALUATION = 8;
   // A license that grants access to the software to one or more pre-defined users.
   LICENSING_TYPE_NAMED_USER = 9;
@@ -416,6 +434,36 @@ message Metadata {
   optional LicenseChoice licenses = 7;
   // Specifies optional, custom, properties
   repeated Property properties = 8;
+  // The product lifecycle(s) that this BOM represents.
+  repeated Lifecycles lifecycles = 9;
+}
+
+message Lifecycles {
+   oneof choice {
+     // A pre-defined phase in the product lifecycle.
+     LifecyclePhase phase = 1;
+     // The name of the lifecycle phase
+     string name = 2;
+   }
+   // The description of the lifecycle phase
+  optional string description = 3;
+}
+
+enum LifecyclePhase {
+  // BOM produced early in the development lifecycle containing inventory of components and services that are proposed or planned to be used. The inventory may need to be procured, retrieved, or resourced prior to use.
+  LIFECYCLE_PHASE_DESIGN = 0;
+  // BOM consisting of information obtained prior to a build process and may contain source files and development artifacts and manifests. The inventory may need to be resolved and retrieved prior to use.
+  LIFECYCLE_PHASE_PRE_BUILD = 1;
+  // BOM consisting of information obtained during a build process where component inventory is available for use. The precise versions of resolved components are usually available at this time as well as the provenance of where the components were retrieved from.
+  LIFECYCLE_PHASE_BUILD = 2;
+  // BOM consisting of information obtained after a build process has completed and the resulting components(s) are available for further analysis. Built components may exist as the result of a CI/CD process, may have been installed or deployed to a system or device, and may need to be retrieved or extracted from the system or device.
+  LIFECYCLE_PHASE_POST_BUILD = 3;
+  // BOM produced that represents inventory that is running and operational. This may include staging or production environments and will generally encompass multiple SBOMs describing the applications and operating system, along with HBOMs describing the hardware that makes up the system. Operations Bill of Materials (OBOM) can provide full-stack inventory of runtime environments, configurations, and additional dependencies.
+  LIFECYCLE_PHASE_OPERATIONS = 4;
+  // BOM consisting of information observed through network discovery providing point-in-time enumeration of embedded, on-premise, and cloud-native services such as server applications, connected devices, microservices, and serverless functions.
+  LIFECYCLE_PHASE_DISCOVERY = 5;
+  // BOM containing inventory that will be, or has been retired from operations.
+  LIFECYCLE_PHASE_DECOMMISSION = 6;
 }
 
 message OrganizationalContact {
@@ -425,6 +473,8 @@ message OrganizationalContact {
   optional string email = 2;
   // The phone number of the contact.
   optional string phone = 3;
+  // An optional identifier which can be used to reference the object elsewhere in the BOM. Uniqueness is enforced within all elements and children of the root-level bom element.
+  optional string bom_ref = 4;
 }
 
 message OrganizationalEntity {
@@ -434,6 +484,8 @@ message OrganizationalEntity {
   repeated string url = 2;
   // A contact person at the organization. Multiple contacts are allowed.
   repeated OrganizationalContact contact = 3;
+  // An optional identifier which can be used to reference the object elsewhere in the BOM. Uniqueness is enforced within all elements and children of the root-level bom element.
+  optional string bom_ref = 4;
 }
 
 enum PatchClassification {
@@ -557,18 +609,26 @@ message Property {
 }
 
 enum Aggregate {
-  // Default, no statement about the aggregate completeness is being made
+  // The relationship completeness is not specified.
   AGGREGATE_NOT_SPECIFIED = 0;
-  // The aggregate composition is complete
+  // The relationship is complete. No further relationships including constituent components, services, or dependencies are known to exist.
   AGGREGATE_COMPLETE = 1;
-  // The aggregate composition is incomplete
+  // The relationship is incomplete. Additional relationships exist and may include constituent components, services, or dependencies.
   AGGREGATE_INCOMPLETE = 2;
-  // The aggregate composition is incomplete for first party components, complete for third party components
+  // The relationship is incomplete. Only relationships for first-party components, services, or their dependencies are represented.
   AGGREGATE_INCOMPLETE_FIRST_PARTY_ONLY = 3;
-  // The aggregate composition is incomplete for third party components, complete for first party components
+  // The relationship is incomplete. Only relationships for third-party components, services, or their dependencies are represented.
   AGGREGATE_INCOMPLETE_THIRD_PARTY_ONLY = 4;
-  // The aggregate composition completeness is unknown
+  // The relationship may be complete or incomplete. This usually signifies a 'best-effort' to obtain constituent components, services, or dependencies but the completeness is inconclusive.
   AGGREGATE_UNKNOWN = 5;
+  // The relationship is incomplete. Only relationships for first-party components, services, or their dependencies are represented, limited specifically to those that are proprietary.
+  AGGREGATE_INCOMPLETE_FIRST_PARTY_PROPRIETARY_ONLY = 6;
+  // The relationship is incomplete. Only relationships for first-party components, services, or their dependencies are represented, limited specifically to those that are opensource.
+  AGGREGATE_INCOMPLETE_FIRST_PARTY_OPENSOURCE_ONLY = 7;
+  // The relationship is incomplete. Only relationships for third-party components, services, or their dependencies are represented, limited specifically to those that are proprietary.
+  AGGREGATE_INCOMPLETE_THIRD_PARTY_PROPRIETARY_ONLY = 8;
+  // The relationship is incomplete. Only relationships for third-party components, services, or their dependencies are represented, limited specifically to those that are opensource.
+  AGGREGATE_INCOMPLETE_THIRD_PARTY_OPENSOURCE_ONLY = 9;
 }
 
 message Composition {
@@ -578,6 +638,10 @@ message Composition {
   repeated string assemblies = 2;
   // The dependencies the aggregate completeness applies to
   repeated string dependencies = 3;
+  // The bom-ref identifiers of the vulnerabilities being described.
+  repeated string vulnerabilities = 4;
+  // An optional identifier which can be used to reference the composition elsewhere in the BOM. Every bom-ref MUST be unique within the BOM.
+  optional string bom_ref = 5;
 }
 
 message EvidenceCopyright {
@@ -754,9 +818,9 @@ message ProofOfConcept {
 
 message VulnerabilityReference {
   // An identifier that uniquely identifies the vulnerability.
-  optional string id = 1;
+  string id = 1;
   // The source that published the vulnerability.
-  optional Source source = 2;
+  Source source = 2;
 }
 
 message VulnerabilityRating {
@@ -799,6 +863,8 @@ enum ScoreMethod {
   SCORE_METHOD_OTHER = 5;
   // Common Vulnerability Scoring System v3.1 - https://www.first.org/cvss/v4-0/
   SCORE_METHOD_CVSSV4 = 6;
+  // Stakeholder Specific Vulnerability Categorization (all versions) - https://github.com/CERTCC/SSVC
+  SCORE_METHOD_SSVC = 7;
 }
 
 message Advisory {
@@ -1063,20 +1129,20 @@ message ComponentData {
     // Provides the ability to document name-value parameters used for configuration.
     repeated Property properties = 3;
   }
+}
 
-  message DataGovernance {
-    // Data custodians are responsible for the safe custody, transport, and storage of data.
-    repeated DataGovernanceResponsibleParty custodians = 1;
-    // Data stewards are responsible for data content, context, and associated business rules.
-    repeated DataGovernanceResponsibleParty stewards = 2;
-    // Data owners are concerned with risk and appropriate access to data.
-    repeated DataGovernanceResponsibleParty owners = 3;
+message DataGovernance {
+  // Data custodians are responsible for the safe custody, transport, and storage of data.
+  repeated DataGovernanceResponsibleParty custodians = 1;
+  // Data stewards are responsible for data content, context, and associated business rules.
+  repeated DataGovernanceResponsibleParty stewards = 2;
+  // Data owners are concerned with risk and appropriate access to data.
+  repeated DataGovernanceResponsibleParty owners = 3;
 
-    message DataGovernanceResponsibleParty {
-      oneof choice {
-        OrganizationalEntity organization = 1;
-        OrganizationalContact contact = 2;
-      }
+  message DataGovernanceResponsibleParty {
+    oneof choice {
+      OrganizationalEntity organization = 1;
+      OrganizationalContact contact = 2;
     }
   }
 }
@@ -1088,8 +1154,10 @@ enum ComponentDataType {
   COMPONENT_DATA_TYPE_CONFIGURATION = 1;
   // A collection of data.
   COMPONENT_DATA_TYPE_DATASET = 2;
+  // Data that can be used to create new instances of what the definition defines.
+  COMPONENT_DATA_TYPE_DEFINITION = 3;
   // Any other type of data that does not fit into existing definitions.
-  COMPONENT_DATA_TYPE_OTHER = 3;
+  COMPONENT_DATA_TYPE_OTHER = 4;
 }
 
 message GraphicsCollection {
@@ -1104,5 +1172,316 @@ message GraphicsCollection {
     // The graphic (vector or raster). Base64 encoding MUST be specified for binary images.
     optional AttachedText image = 2;
   }
+}
 
+// Describes workflows and resources that captures rules and other aspects of how the associated BOM component or service was formed.
+message Formula {
+  // BOM unique reference to the resource.
+  optional string bom_ref = 1;
+  // Transient components that are used in tasks that constitute one or more of this formula's workflows
+  repeated Component components = 2;
+  // Transient services that are used in tasks that constitute one or more of this formula's workflows
+  repeated Service services = 3;
+  // List of workflows that can be declared to accomplish specific orchestrated goals and independently triggered.
+  repeated Workflow workflows = 4;
+  // Domain-specific formula properties.
+  repeated Property properties = 5;
+}
+
+// A specialized orchestration task.
+message Workflow {
+  // BOM unique reference to the resource.
+  string bom_ref = 1;
+  // The unique identifier for the resource instance within its deployment context.
+  string uid = 2;
+  // The name of the resource instance.
+  optional string name = 3;
+  // A description of the resource instance.
+  optional string description = 4;
+  // Domain-specific resource instance properties.
+  repeated Property properties = 5;
+  // References to component or service resources that are used to realize the resource instance.
+  repeated ResourceReferenceChoice resourceReferences = 6;
+  // The tasks that comprise the workflow.
+  repeated Task tasks = 7;
+  // The graph of dependencies between tasks within the workflow.
+  repeated Dependency taskDependencies = 8;
+  // Indicates the types of activities performed by the set of workflow tasks.
+  repeated TaskType taskTypes = 9;
+  // The trigger that initiated the task.
+  optional Trigger trigger = 10;
+  // The sequence of steps for the task.
+  repeated Step steps = 11;
+  // Represents resources and data brought into a task at runtime by executor or task commands
+  repeated InputType inputs = 12;
+  // Represents resources and data output from a task at runtime by executor or task commands
+  repeated OutputType outputs = 13;
+  // The date and time (timestamp) when the task started.
+  optional google.protobuf.Timestamp timeStart = 14;
+  // The date and time (timestamp) when the task ended.
+  optional google.protobuf.Timestamp timeEnd = 15;
+  // A set of named filesystem or data resource shareable by workflow tasks.
+  repeated Workspace workspaces = 16;
+  // A graph of the component runtime topology for workflow's instance.
+  repeated Dependency runtimeTopology = 17;
+}
+
+// Describes the inputs, sequence of steps and resources used to accomplish a task and its output.
+message Task {
+  // BOM unique reference to the resource.
+  string bom_ref = 1;
+  // The unique identifier for the resource instance within its deployment context.
+  string uid = 2;
+  // The name of the resource instance.
+  optional string name = 3;
+  // A description of the resource instance.
+  optional string description = 4;
+  // Domain-specific task instance properties.
+  repeated Property properties = 5;
+  // References to component or service resources that are used to realize the resource instance.
+  repeated ResourceReferenceChoice resourceReferences = 6;
+  // Indicates the types of activities performed by the set of workflow tasks.
+  repeated TaskType taskTypes = 7;
+  // The trigger that initiated the task.
+  optional Trigger trigger = 8;
+  // "The sequence of steps for the task.
+  repeated Step steps = 9;
+  // Represents resources and data brought into a task at runtime by executor or task commands
+  repeated InputType inputs = 10;
+  // Represents resources and data output from a task at runtime by executor or task commands
+  repeated OutputType outputs = 11;
+  // The date and time (timestamp) when the task started.
+  optional google.protobuf.Timestamp timeStart = 14;
+  // The date and time (timestamp) when the task ended.
+  optional google.protobuf.Timestamp timeEnd = 15;
+  // A set of named filesystem or data resource shareable by workflow tasks.
+  repeated Workspace workspaces = 16;
+  // A graph of the component runtime topology for task's instance.
+  repeated Dependency runtimeTopology = 17;
+}
+
+// Executes specific commands or tools in order to accomplish its owning task as part of a sequence.
+message Step {
+  // A name for the step.
+  optional string name = 1;
+  // A description of the step.
+  optional string description = 2;
+  // Ordered list of commands or directives for the step
+  repeated Command commands = 3;
+  // Domain-specific step properties.
+  repeated Property properties = 4;
+}
+
+message Command {
+  // A text representation of the executed command.
+  optional string executed = 1;
+  // Domain-specific command properties.
+  repeated Property properties = 2;
+}
+
+// A named filesystem or data resource shareable by workflow tasks.
+message Workspace {
+  // BOM unique reference to the resource.
+  string bom_ref = 1;
+  // The unique identifier for the resource instance within its deployment context.
+  string uid = 2;
+  // The name of the resource instance.
+  optional string name = 3;
+  // The names for the workspace as referenced by other workflow tasks. Effectively, a name mapping so other tasks can use their own local name in their steps.
+  repeated string aliases = 4;
+  // A description of the resource instance.
+  optional string description = 5;
+  // Domain-specific workspace instance properties.
+  repeated Property properties = 6;
+  // References to component or service resources that are used to realize the resource instance.
+  repeated ResourceReferenceChoice resourceReferences = 7;
+  // Describes the read-write access control for the workspace relative to the owning resource instance.
+  optional AccessMode accessMode = 8;
+  // A path to a location on disk where the workspace will be available to the associated task's steps.
+  optional string mountPath = 9;
+  // The name of a domain-specific data type the workspace represents.
+  optional string managedDataType = 10;
+  // Identifies the reference to the request for a specific volume type and parameters.
+  optional string volumeRequest = 11;
+  // Information about the actual volume instance allocated to the workspace.
+  optional Volume volume = 12;
+
+  enum AccessMode {
+    ACCESS_MODE_READ_ONLY = 0;
+    ACCESS_MODE_READ_WRITE = 1;
+    ACCESS_MODE_READ_WRITE_ONCE = 2;
+    ACCESS_MODE_WRITE_ONCE = 3;
+    ACCESS_MODE_WRITE_ONLY = 4;
+  }
+}
+
+// An identifiable, logical unit of data storage tied to a physical device.
+message Volume {
+  // The unique identifier for the volume instance within its deployment context.
+  optional string uid = 1;
+  // The name of the volume instance
+  optional string name = 2;
+  // The volume mode for the volume instance.
+  optional VolumeMode mode = 3;
+  // The underlying path created from the actual volume.
+  optional string path = 4;
+  // The allocated size of the volume accessible to the associated workspace. This should include the scalar size as well as IEC standard unit in either decimal or binary form.
+  optional string sizeAllocated = 5;
+  // Indicates if the volume persists beyond the life of the resource it is associated with.
+  optional bool persistent = 6;
+  // Indicates if the volume is remotely (i.e., network) attached.
+  optional bool remote = 7;
+  // Domain-specific volume instance properties.
+  repeated Property properties = 8;
+
+  enum VolumeMode {
+    VOLUME_MODE_FILESYSTEM = 0;
+    VOLUME_MODE_BLOCK = 1;
+  }
+}
+
+// Represents a resource that can conditionally activate (or fire) tasks based upon associated events and their data.
+message Trigger {
+  // BOM unique reference to the resource.
+  string bom_ref = 1;
+  // The unique identifier for the resource instance within its deployment context.
+  string uid = 2;
+  // The name of the resource instance.
+  optional string name = 3;
+  // A description of the resource instance.
+  optional string description = 4;
+  // Additional properties of the trigger.
+  repeated Property properties = 5;
+  // References to component or service resources that are used to realize the resource instance.
+  repeated ResourceReferenceChoice resourceReferences = 6;
+  // The source type of event which caused the trigger to fire.
+  TriggerType type = 7;
+  // The event data that caused the associated trigger to activate.
+  optional Event event = 8;
+  // Conditions
+  repeated Condition conditions = 9;
+  // The date and time (timestamp) when the trigger was activated.
+  optional google.protobuf.Timestamp timeActivated = 10;
+  // Represents resources and data brought into a task at runtime by executor or task commands
+  repeated InputType inputs = 11;
+  // Represents resources and data output from a task at runtime by executor or task commands
+  repeated OutputType outputs = 12;
+
+  enum TriggerType {
+    TRIGGER_TYPE_MANUAL = 0;
+    TRIGGER_TYPE_API = 1;
+    TRIGGER_TYPE_WEBHOOK = 2;
+    TRIGGER_TYPE_SCHEDULED = 3;
+  }
+}
+
+// Represents something that happened that may trigger a response.
+message Event {
+  // The unique identifier of the event.
+  optional string uid = 1;
+  // A description of the event.
+  optional string description = 2;
+  // The date and time (timestamp) when the event was received.
+  optional google.protobuf.Timestamp timeReceived = 3;
+  // Encoding of the raw event data.
+  optional AttachedText data = 4;
+  // References the component or service that was the source of the event
+  optional ResourceReferenceChoice source = 5;
+  // References the component or service that was the target of the event
+  optional ResourceReferenceChoice target = 6;
+  // Additional properties of the event.
+  repeated Property properties = 7;
+}
+
+// Type that represents various input data types and formats.
+message InputType {
+  // A references to the component or service that provided the input to the task (e.g., reference to a service with data flow value of `inbound`)
+  optional ResourceReferenceChoice source = 1;
+  // A reference to the component or service that received or stored the input if not the task itself (e.g., a local, named storage workspace)
+  optional ResourceReferenceChoice target = 2;
+  // A reference to an independent resource provided as an input to a task by the workflow runtime.
+  optional ResourceReferenceChoice resource = 3;
+  // Inputs that have the form of parameters with names and values.
+  repeated Parameter parameters = 4;
+  // Inputs that have the form of parameters with names and values.
+  repeated EnvironmentVars environmentVars = 5;
+  // Inputs that have the form of data.
+  optional AttachedText data = 6;
+  // Additional properties of the input data.
+  repeated Property properties = 7;
+}
+
+message OutputType {
+  // Describes the type of data output.
+  optional OutputTypeType type = 1;
+  // Component or service that generated or provided the output from the task (e.g., a build tool)
+  optional ResourceReferenceChoice source = 2;
+  // Component or service that received the output from the task (e.g., reference to an artifactory service with data flow value of `outbound`)
+  optional ResourceReferenceChoice target = 3;
+  // A reference to an independent resource generated as output by the task.
+  optional ResourceReferenceChoice resource = 4;
+  // Outputs that have the form of data.
+  optional AttachedText data = 5;
+  // Outputs that have the form of environment variables.
+  repeated EnvironmentVars environmentVars = 6;
+  // Additional properties of the output data.
+  repeated Property properties = 7;
+
+  enum OutputTypeType {
+    OUTPUT_TYPE_ARTIFACT = 0;
+    OUTPUT_TYPE_ATTESTATION = 1;
+    OUTPUT_TYPE_LOG = 2;
+    OUTPUT_TYPE_EVIDENCE = 3;
+    OUTPUT_TYPE_METRICS = 4;
+    OUTPUT_TYPE_OTHER = 5;
+  }
+}
+
+message ResourceReferenceChoice {
+  oneof choice {
+    string ref = 1;
+    ExternalReference externalReference = 2;
+  }
+}
+
+// A condition that was used to determine a trigger should be activated.
+message Condition {
+  // Describes the set of conditions which cause the trigger to activate.
+  optional string description = 1;
+  // The logical expression that was evaluated that determined the trigger should be fired.
+  optional string expression = 2;
+  // Domain-specific condition instance properties.
+  repeated Property properties = 3;
+}
+
+enum TaskType {
+  TASK_TYPE_COPY = 0;
+  TASK_TYPE_CLONE = 1;
+  TASK_TYPE_LINT = 2;
+  TASK_TYPE_SCAN = 3;
+  TASK_TYPE_MERGE = 4;
+  TASK_TYPE_BUILD = 5;
+  TASK_TYPE_TEST = 6;
+  TASK_TYPE_DELIVER = 7;
+  TASK_TYPE_DEPLOY = 8;
+  TASK_TYPE_RELEASE = 9;
+  TASK_TYPE_CLEAN = 10;
+  TASK_TYPE_OTHER = 11;
+}
+
+// A representation of a functional parameter.
+message Parameter {
+  // The name of the parameter.
+  optional string name = 1;
+  // The value of the parameter.
+  optional string value = 2;
+  // The data type of the parameter.
+  optional string dataType = 3;
+}
+
+message EnvironmentVars {
+  oneof choice {
+    Property property = 1;
+    string value = 2;
+  }
 }
